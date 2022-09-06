@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import "@reach/dialog/styles.css"
-// import { Dialog } from '@reach/dialog'
 
 import { Logo } from './components/logo'
 import { Button, FormGroup, Input, Dialog } from "./components/lib"
