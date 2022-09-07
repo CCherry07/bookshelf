@@ -44,11 +44,9 @@ function ModalContentsBase(props: any) {
   )
 }
 
-
 interface ModalContentsProps {
   title: string,
   children: React.ReactNode,
-  // [key in string]: any
 }
 function ModalContents({ title, children, ...props }: ModalContentsProps) {
   return (
