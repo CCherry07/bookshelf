@@ -6,7 +6,9 @@ import * as mq from '../../styles/media-queries'
 import { Dialog as ReachDialog } from '@reach/dialog'
 import { FaSpinner } from 'react-icons/fa'
 
-const buttonTypes: { [key in 'primary' | "secondary"]: any } = {
+
+type ButtonTypes = 'primary' | "secondary"
+const buttonTypes: Record<ButtonTypes, {}> = {
   primary: {
     background: colors.indigo,
     color: colors.base,
@@ -21,7 +23,7 @@ const Button = styled.button({
   'border': 0,
   'line-height': "1",
   'border-radius': '3px'
-}, ({ type = "primary" }: { type: 'primary' | "secondary" }) => buttonTypes[type], ({ width }: { width: string }) => ({ width: width + "px" }))
+}, ({ type = "primary" }: { type: ButtonTypes }) => buttonTypes[type], ({ width }: { width: string }) => ({ width: width + "px" }))
 
 
 const spin = keyframes({
@@ -115,7 +117,7 @@ const errorMessageVariants: { [key in string]: any } = {
   inline: { display: 'inline-block' },
 }
 
-function ErrorMessage({ error, variant = 'stacked', ...props }: { error: { message: any }, variant: string }) {
+function ErrorMessage({ error, variant = 'stacked', ...props }: { error: { message: string }, variant: string }) {
   return (
     <div
       role="alert"
