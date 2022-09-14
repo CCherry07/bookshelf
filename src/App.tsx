@@ -1,16 +1,17 @@
+/** @jsxImportSource @emotion/react */
 import React, { useState } from "react"
 import "@reach/dialog/styles.css"
-
 import { Logo } from './components/logo'
 import { Button, FormGroup, Input, Dialog } from "./components/lib"
+import { jsx, css } from "@emotion/react"
 type OpenModal = "none" | "login" | "register"
 type FormData = { username: string, password: string }
 interface LoginFormProps {
   onSubmit: ({ username, password }: FormData) => void
-  buttontext: string,
-  submitButton?: React.ReactNode
+  submitButton: any
 }
-function LoginForm({ onSubmit, buttontext = "submit" }: LoginFormProps) {
+function LoginForm({ onSubmit, ...props }: LoginFormProps) {
+  const { submitButton } = props
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const { username, password } = (event.target as any).elements
@@ -30,7 +31,7 @@ function LoginForm({ onSubmit, buttontext = "submit" }: LoginFormProps) {
         <Input id="password" type="password" />
       </FormGroup>
       <div>
-        <Button onSubmit={handleSubmit}> {buttontext} </Button>
+        {React.cloneElement(submitButton, { type: "submit" })}
       </div>
     </form>
   )
@@ -50,19 +51,26 @@ function App() {
   }
   return (
     <div className="App">
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <div css={css`
+        height:100vh;
+        width:100%;
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      `}>
         <Logo width='80' height='80' />
         <h1> Bookshelf </h1>
         <div>
-          <Button style={{ margin: " 0 20px 0 0", }} width="80" onClick={() => setOpenModal("login")}>Login</Button>
-          <Button type="secondary" onClick={() => setOpenModal("register")}>Register</Button>
+          <button style={{ margin: " 0 20px 0 0", }} onClick={() => setOpenModal("login")}>Login</button>
+          <button onClick={() => setOpenModal("register")}>Register</button>
         </div>
         <Dialog aria-label="login form" isOpen={openModal === 'login'}>
-          {/* <Button onClick={() => setOpenModal("none")}>check</Button> */}
-          <LoginForm onSubmit={login} buttontext="Login" />
+          {/* <button onClick={() => setOpenModal("none")}>check</button> */}
+          <LoginForm submitButton={(<Button>Login</Button>)} onSubmit={login} />
         </Dialog>
         <Dialog aria-label="register form" isOpen={openModal === 'register'}>
-          <LoginForm onSubmit={register} buttontext="Register" />
+          <LoginForm onSubmit={register} submitButton={(<Button>Register</Button>)} />
         </Dialog>
       </div>
     </div>
