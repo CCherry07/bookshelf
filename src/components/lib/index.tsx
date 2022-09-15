@@ -10,7 +10,6 @@ import { FaSpinner } from 'react-icons/fa'
 
 interface ButtonProps {
   variant?: 'primary' | 'secondary',
-  children: React.ReactNode
 }
 const buttonTypes: Record<'primary' | 'secondary', {}> = {
   primary: {
