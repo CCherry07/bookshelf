@@ -7,8 +7,12 @@ import { Dialog as ReachDialog } from '@reach/dialog'
 import { FaSpinner } from 'react-icons/fa'
 
 
-type ButtonTypes = 'primary' | "secondary"
-const buttonTypes: Record<ButtonTypes, {}> = {
+
+interface ButtonProps {
+  type?: 'primary' | 'secondary',
+  children: React.ReactNode
+}
+const buttonTypes: Record<'primary' | 'secondary', {}> = {
   primary: {
     background: colors.indigo,
     color: colors.base,
@@ -18,18 +22,20 @@ const buttonTypes: Record<ButtonTypes, {}> = {
     color: colors.text,
   },
 }
-const Button = styled.button({
-  'padding': '10px 15px',
-  'border': 0,
-  'line-height': "1",
-  'border-radius': '3px'
-}, ({ type = "primary" }: { type: ButtonTypes }) => buttonTypes[type], ({ width }: { width: string }) => ({ width: width + "px" }))
-
-
-const spin = keyframes({
-  '0%': { transform: 'rotate(0deg)' },
-  '100%': { transform: 'rotate(360deg)' },
-})
+const Button = styled("div")<ButtonProps>(
+  {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: '80px',
+    padding: '10px 15px',
+    border: '0',
+    cursor: "pointer",
+    textAlign: "center",
+    lineHeight: "1",
+    borderRadius: '3px'
+  },
+  ({ type = 'primary' }) => buttonTypes[type])
 
 const CircleButton = styled.button({
   borderRadius: '30px',
@@ -52,6 +58,11 @@ const BookListUL = styled.ul({
   display: 'grid',
   gridTemplateRows: 'repeat(auto-fill, minmax(100px, 1fr))',
   gridGap: '1em',
+})
+
+const spin = keyframes({
+  '0%': { transform: 'rotate(0deg)' },
+  '100%': { transform: 'rotate(360deg)' },
 })
 
 const Spinner = styled(FaSpinner)({
