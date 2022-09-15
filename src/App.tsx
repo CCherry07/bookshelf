@@ -97,7 +97,9 @@ function App() {
           <LoginForm title="Login" submitButton={(<Button variant={"primary"}>Login</Button>)} onSubmit={login} />
         </Dialog>
         <Dialog aria-label="register form" isOpen={openModal === 'register'}>
-          <LoginForm title="Register" onSubmit={register} submitButton={(<Button variant={"secondary"}>Register</Button>)} />
+          <LoginForm title="Register" onSubmit={register} submitButton={(<Button css={css`
+            width: fit-content;
+          `} variant={"secondary"}>Register</Button>)} />
         </Dialog>
       </div>
     </div>
