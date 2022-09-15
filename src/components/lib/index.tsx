@@ -9,7 +9,7 @@ import { FaSpinner } from 'react-icons/fa'
 
 
 interface ButtonProps {
-  type?: 'primary' | 'secondary',
+  variant?: 'primary' | 'secondary',
   children: React.ReactNode
 }
 const buttonTypes: Record<'primary' | 'secondary', {}> = {
@@ -22,7 +22,7 @@ const buttonTypes: Record<'primary' | 'secondary', {}> = {
     color: colors.text,
   },
 }
-const Button = styled("div")<ButtonProps>(
+const Button = styled("button")<ButtonProps>(
   {
     display: "flex",
     alignItems: "center",
@@ -35,7 +35,7 @@ const Button = styled("div")<ButtonProps>(
     lineHeight: "1",
     borderRadius: '3px'
   },
-  ({ type = 'primary' }) => buttonTypes[type])
+  ({ variant = 'primary' }) => buttonTypes[variant])
 
 const CircleButton = styled.button({
   borderRadius: '30px',

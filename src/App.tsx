@@ -14,14 +14,16 @@ interface LoginFormProps {
 }
 function LoginForm({ onSubmit, ...props }: LoginFormProps) {
   const { submitButton, title } = props
-  const [isLoading,] = useState(true)
+  const [isLoading, setLoading] = useState(true)
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const { username, password } = (event.target as any).elements
+    console.log(username, password);
     onSubmit({
       username: username.value as string,
       password: password.value as string
     })
+    setLoading(false)
   }
   return (
     <>
@@ -51,10 +53,10 @@ function LoginForm({ onSubmit, ...props }: LoginFormProps) {
           <Input id="password" type="password" />
         </FormGroup>
         <div>
-          {React.cloneElement(submitButton, undefined,
+          {React.cloneElement(submitButton, { type: "submit" },
             ...(Array.isArray(submitButton.props.children) ?
               submitButton.props.children : [submitButton.props.children]),
-            isLoading ? <Spinner css={{marginLeft: 5}} /> : null)}
+            isLoading ? <Spinner css={{ marginLeft: 5 }} /> : null)}
         </div>
       </form>
     </>
@@ -89,13 +91,13 @@ function App() {
           display:flex;
         `}>
           <Button style={{ margin: " 0 20px 0 0", }} onClick={() => setOpenModal("login")}>Login</Button>
-          <Button type={"secondary"} onClick={() => setOpenModal("register")}>Register</Button>
+          <Button variant={"secondary"} onClick={() => setOpenModal("register")}>Register</Button>
         </div>
         <Dialog aria-label="login form" isOpen={openModal === 'login'}>
-          <LoginForm title="Login" submitButton={(<Button type={"primary"}>Login</Button>)} onSubmit={login} />
+          <LoginForm title="Login" submitButton={(<Button variant={"primary"}>Login</Button>)} onSubmit={login} />
         </Dialog>
         <Dialog aria-label="register form" isOpen={openModal === 'register'}>
-          <LoginForm title="Register" onSubmit={register} submitButton={(<Button type={"secondary"}>Register</Button>)} />
+          <LoginForm title="Register" onSubmit={register} submitButton={(<Button variant={"secondary"}>Register</Button>)} />
         </Dialog>
       </div>
     </div>
