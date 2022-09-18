@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+import "@reach/dialog/styles.css"
 import { css } from "@emotion/react"
 import VisuallyHidden from "@reach/visually-hidden"
 import React, { useState } from "react"
