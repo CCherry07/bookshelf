@@ -19,46 +19,36 @@ export const useSafeDispatch = <T extends Record<string, any>>(dispatch: Dispatc
   }, [])
 }
 
-type AsyncStatus = "idle" | "success" | "error" | "panding"
-interface AsyncType<D> {
+type AsyncStatus = "idle" | "success" | "error" | "pending"
+interface State<D> {
   status: AsyncStatus,
   data: D | null,
   error: { message: any } | null
 }
-const defaultInitialState = { status: 'idle', data: null, error: null }
-export const useAsync = <D>(initialState?: AsyncType<D>) => {
+const defaultInitialState: State<null> = { status: 'idle', data: null, error: null }
+export const useAsync = <D>(initialState?: State<D>) => {
   const initialStateRef = useRef({
     ...defaultInitialState,
     ...initialState,
   })
-  const [status, unSafeDispatch] = useReducer((state: any, action: any) => ({ ...state, ...action }), initialStateRef)
-  const [fn, setFn] = useState<any>(() => () => ({}))
-  const dispatch = useSafeDispatch<AsyncType<D>>(unSafeDispatch)
+  const [{ status, data, error }, unSafeDispatch] = useReducer((state: State<D>, action: Partial<State<D>>) => ({ ...state, ...action }), initialStateRef.current)
+  // const [retry , setReTry] = useState<any>(() => () => ({}))
+  const dispatch = useSafeDispatch<State<D>>(unSafeDispatch)
 
   const setData = useCallback((data: D) => dispatch({ data, status: "success", error: null }), [dispatch])
   const setError = useCallback((error: { message: any }) => dispatch({ error, data: null, status: "error" }), [dispatch])
   const rest = useCallback(() => dispatch({ status: "idle", data: null, error: null }), [dispatch])
 
   const run = useCallback((promise: Promise<D>) => {
-    setFn(fn)
-    useEffect(() => {
-      dispatch({ status: "panding", data: null, error: null })
-      promise.then(res => {
-        setData(res)
-      }, (err: { message: any }) => setError(err))
-    }, [promise])
-
-    return () => {
-      setFn(() => ({}))
-      dispatch({
-        status: "idle",
-        data: null,
-        error: null
-      })
-    }
-  }, [])
-
-  const retry = useCallback(() => run(fn), [fn])
+    dispatch({ status: "pending", data: null, error: null })
+    return promise.then(data => {
+      setData(data)
+      return data
+    }, (err: { message: any }) => {
+      setError(err)
+      return Promise.reject(err)
+    })
+  }, [dispatch, setData, setError])
 
   return {
     isIdle: status === 'idle',
@@ -66,10 +56,11 @@ export const useAsync = <D>(initialState?: AsyncType<D>) => {
     isError: status === 'error',
     isSuccess: status === 'success',
 
+    data,
+    error,
     setData,
     setError,
     rest,
     run,
-    retry
   }
 }
