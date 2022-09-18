@@ -13,9 +13,7 @@ export const useMounted = () => {
 export const useSafeDispatch = <T extends Record<string, any>>(dispatch: Dispatch<T>) => {
   const mountedRef = useMounted()
   return useCallback((...args: [T]) => {
-    if (mountedRef.current) {
-      dispatch(...args)
-    }
+    return mountedRef.current ? dispatch(...args) : void 0
   }, [])
 }
 
