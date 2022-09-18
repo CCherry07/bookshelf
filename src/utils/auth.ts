@@ -1,4 +1,3 @@
-
 type FormData = { username: string, password: string }
 const authURL = "https://auth-provider.jk/auth"
 export const login = (data: FormData) => {
