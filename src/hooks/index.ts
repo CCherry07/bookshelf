@@ -10,14 +10,14 @@ export const useMounted = () => {
   return mountedRef
 }
 
-// export const useSafeDispatch = <T extends Record<string, any>>(dispatch: Dispatch<T>) => {
-//   const mountedRef = useMounted()
-//   return useCallback((...args: [T]) => {
-//     if (mountedRef.current) {
-//       dispatch(...args)
-//     }
-//   }, [])
-// }
+export const useSafeDispatch = <T extends Record<string, any>>(dispatch: Dispatch<T>) => {
+  const mountedRef = useMounted()
+  return useCallback((...args: [T]) => {
+    if (mountedRef.current) {
+      dispatch(...args)
+    }
+  }, [])
+}
 
 // type AsyncStatus = "idle" | "success" | "error" | "panding"
 // interface AsyncType<D> {
