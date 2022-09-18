@@ -25,28 +25,32 @@ interface AsyncType<D> {
   data: D | null,
   error: { message: any } | null
 }
-export const useAsync = <D>(promise: Promise<D>) => {
-  const [status, unSafeDispatch] = useReducer((state: AsyncType<D>, action: { type: AsyncStatus, status: AsyncStatus, data: D | null, error: { message: any } | null }): AsyncType<D> => ({ ...state, ...action }), {
-    status: "idle",
-    data: null,
-    error: null
+const defaultInitialState = { status: 'idle', data: null, error: null }
+export const useAsync = <D>(initialState?: AsyncType<D>) => {
+  const initialStateRef = useRef({
+    ...defaultInitialState,
+    ...initialState,
   })
+  const [status, unSafeDispatch] = useReducer((state: any, action: any) => ({ ...state, ...action }), initialStateRef)
   const [fn, setFn] = useState<any>(() => () => ({}))
-  const dispatch = useSafeDispatch(unSafeDispatch)
+  const dispatch = useSafeDispatch<AsyncType<D>>(unSafeDispatch)
 
-  const run = useCallback((fn: () => Promise<D>) => {
+  const setData = useCallback((data: D) => dispatch({ data, status: "success", error: null }), [dispatch])
+  const setError = useCallback((error: { message: any }) => dispatch({ error, data: null, status: "error" }), [dispatch])
+  const rest = useCallback(() => dispatch({ status: "idle", data: null, error: null }), [dispatch])
+
+  const run = useCallback((promise: Promise<D>) => {
     setFn(fn)
-    const promise = fn()
     useEffect(() => {
-      dispatch({ type: "panding", status: "panding", data: null, error: null })
+      dispatch({ status: "panding", data: null, error: null })
       promise.then(res => {
-        dispatch({ type: "success", status: "success", data: res, error: null })
-      }, (err: { message: any }) => dispatch({ type: "error", status: "error", error: err, data: null }))
+        setData(res)
+      }, (err: { message: any }) => setError(err))
     }, [promise])
+
     return () => {
       setFn(() => ({}))
       dispatch({
-        type: "idle",
         status: "idle",
         data: null,
         error: null
@@ -57,18 +61,15 @@ export const useAsync = <D>(promise: Promise<D>) => {
   const retry = useCallback(() => run(fn), [fn])
 
   return {
-    ...status,
+    isIdle: status === 'idle',
+    isLoading: status === 'pending',
+    isError: status === 'error',
+    isSuccess: status === 'success',
+
+    setData,
+    setError,
+    rest,
     run,
     retry
   }
 }
-
-// interface useHttpProps {
-//   src: string,
-//   payload: Record<string, any>,
-//   config: any
-// }
-
-// export const useHttp = ({ src, payload, config }: useHttpProps) => {
-  
-// }
