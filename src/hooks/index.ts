@@ -1,4 +1,4 @@
-import { Dispatch, useCallback, useLayoutEffect, useReducer, useRef, useState } from "react"
+import { Dispatch, useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react"
 
 export const useMounted = () => {
   const mountedRef = useRef(false)
@@ -61,4 +61,24 @@ export const useAsync = <D>(initialState?: State<D>) => {
     rest,
     run,
   }
+}
+
+export const useLocalStorage = (localStorageKey: string, defaultValue: any = "", { serialize = JSON.stringify, deserialize = JSON.parse } = {}) => {
+  const [state, setState] = useState(() => {
+    const value = window.localStorage.getItem(localStorageKey)
+    if (value) return deserialize(value)
+    return (typeof defaultValue === "function") ? defaultValue() : defaultValue
+  })
+  const preKeyRef = useRef(localStorageKey)
+  useEffect(() => {
+    if (preKeyRef.current !== localStorageKey) {
+      window.localStorage.removeItem(preKeyRef.current)
+    }
+    preKeyRef.current = localStorageKey
+  }, [localStorageKey])
+
+  useEffect(() => {
+    window.localStorage.setItem(localStorageKey, serialize(state))
+  }, [localStorageKey, state, serialize])
+  return [state, setState]
 }
