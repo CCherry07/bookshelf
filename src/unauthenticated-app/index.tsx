@@ -6,8 +6,9 @@ import React, { useState } from "react"
 import { Button, CircleButton, Dialog, FormGroup, Input, Spinner } from "../components/lib"
 import { Logo } from "../components/logo"
 
+import type { FormData } from '../utils/auth'
+
 type OpenModal = "none" | "login" | "register"
-type FormData = { username: string, password: string }
 interface unauthenticatedAppProps {
   login: (data: FormData) => void,
   register: (data: FormData) => void
