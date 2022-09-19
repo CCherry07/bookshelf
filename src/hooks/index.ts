@@ -6,6 +6,9 @@ export const useMounted = () => {
     if (!mountedRef.current) {
       mountedRef.current = true
     }
+    return ()=>{
+      mountedRef.current = false
+    }
   }, [])
   return mountedRef
 }
@@ -53,7 +56,7 @@ export const useAsync = <D>(initialState?: State<D>) => {
     isLoading: status === 'pending',
     isError: status === 'error',
     isSuccess: status === 'success',
-
+    status,
     data,
     error,
     setData,
