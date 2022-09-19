@@ -13,7 +13,7 @@ interface unauthenticatedAppProps {
   register: (data: FormData) => void
 }
 
-export default ({ login, register }: unauthenticatedAppProps) => {
+export const UnauthenticatedApp = ({ login, register }: unauthenticatedAppProps) => {
   interface LoginFormProps {
     title: string
     onSubmit: ({ username, password }: FormData) => void
