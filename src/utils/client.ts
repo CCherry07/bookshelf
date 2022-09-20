@@ -1,5 +1,5 @@
 import { QueryCache } from 'react-query'
-// import * as auth from 'auth-provider'
+import * as auth from './auth'
 // REACT_APP_API_URL=https://bookshelf.jk/api
 // REACT_APP_AUTH_URL=https://auth-provider.jk/auth
 const apiURL = 'https://bookshelf.jk/api'
@@ -29,7 +29,7 @@ async function client(
   return window.fetch(`${apiURL}/${endpoint}`, config).then(async response => {
     if (response.status === 401) {
       new QueryCache().clear()
-      // await auth.logout()
+      await auth.logout()
       // refresh the page for them
       window.location.assign(window.location as unknown as string)
       return Promise.reject({ message: 'Please re-authenticate.' })
