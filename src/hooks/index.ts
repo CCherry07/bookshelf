@@ -21,6 +21,7 @@ export const useSafeDispatch = <T extends Record<string, any>>(dispatch: Dispatc
 }
 
 type AsyncStatus = "idle" | "success" | "error" | "pending"
+
 interface State<D> {
   status: AsyncStatus,
   data: D | null,
@@ -33,7 +34,6 @@ export const useAsync = <D>(initialState?: State<D>) => {
     ...initialState,
   })
   const [{ status, data, error }, unSafeDispatch] = useReducer((state: State<D>, action: Partial<State<D>>) => ({ ...state, ...action }), initialStateRef.current)
-  // const [retry , setReTry] = useState<any>(() => () => ({}))
   const dispatch = useSafeDispatch<State<D>>(unSafeDispatch)
 
   const setData = useCallback((data: D) => dispatch({ data, status: "success", error: null }), [dispatch])
