@@ -11,11 +11,7 @@ interface AuthContextProps {
 const AuthContext = React.createContext({})
 AuthContext.displayName = 'AuthContext'
 function AuthProvider({ children }: { children: any }) {
-  const {
-    data: user,
-    setData,
-    ...otherProps
-  } = useAsync()
+  const { data: user, setData } = useAsync()
 
   const login = useCallback(async (formData: auth.FormData) => setData(await auth.login(formData)), [setData])
   const register = useCallback(async (formData: auth.FormData) => setData(await auth.register(formData)), [setData])
