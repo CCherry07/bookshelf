@@ -1,12 +1,13 @@
+import { u } from 'msw/lib/glossary-58eca5a8'
 import * as booksDB from './books'
 const listItemsKey = '__bookshelf_list_items__'
-let listItems = {}
+let listItems: Record<booksDB.Book["title"], booksDB.Book> = {}
 const persist = () =>
   window.localStorage.setItem(listItemsKey, JSON.stringify(listItems))
 const load = () =>
   Object.assign(
     listItems,
-    JSON.parse(window.localStorage.getItem(listItemsKey)),
+    JSON.parse(window.localStorage.getItem(listItemsKey) ?? ""),
   )
 
 // initialize
@@ -20,15 +21,16 @@ try {
 window.__bookshelf = window.__bookshelf || {}
 window.__bookshelf.purgeListItems = () => {
   Object.keys(listItems).forEach(key => {
-    delete listItems[key]
+    delete listItems[key as unknown as number]
   })
   persist()
 }
 
-async function authorize(userId, listItemId) {
+interface Error { message: string, status?: number }
+async function authorize(userId: any, listItemId: string) {
   const listItem = await read(listItemId)
   if (listItem.ownerId !== userId) {
-    const error = new Error('User is not authorized to view that list')
+    const error = new Error('User is not authorized to view that list') as Error
     error.status = 403
     throw error
   }
@@ -46,7 +48,7 @@ async function create({
   if (listItems[id]) {
     const error = new Error(
       `This user cannot create new list item for that book`,
-    )
+    ) as Error
     error.status = 400
     throw error
   }
@@ -56,17 +58,17 @@ async function create({
     error.status = 400
     throw error
   }
-  listItems[id] = {id, bookId, ownerId, rating, notes, finishDate, startDate}
+  listItems[id] = { id, bookId, ownerId, rating, notes, finishDate, startDate }
   persist()
   return read(id)
 }
 
-async function read(id) {
+async function read(id: string) {
   validateListItem(id)
   return listItems[id]
 }
 
-async function update(id, updates) {
+async function update(id: string | number | readonly string[], updates: string | number | boolean | Record<string, any> | u | null | undefined) {
   validateListItem(id)
   Object.assign(listItems[id], updates)
   persist()
@@ -74,26 +76,26 @@ async function update(id, updates) {
 }
 
 // this would be called `delete` except that's a reserved word in JS :-(
-async function remove(id) {
+async function remove(id: string | number | readonly string[]) {
   validateListItem(id)
   delete listItems[id]
   persist()
 }
 
-async function readMany(userId, listItemIds) {
+async function readMany(userId: any, listItemIds: any[]) {
   return Promise.all(
-    listItemIds.map(id => {
+    listItemIds.map((id: any) => {
       authorize(userId, id)
       return read(id)
     }),
   )
 }
 
-async function readByOwner(userId) {
+async function readByOwner(userId: any) {
   return Object.values(listItems).filter(li => li.ownerId === userId)
 }
 
-function validateListItem(id) {
+function validateListItem(id: string | number) {
   load()
   if (!listItems[id]) {
     const error = new Error(`No list item with the id "${id}"`)
@@ -102,7 +104,7 @@ function validateListItem(id) {
   }
 }
 
-function hash(str) {
+function hash(str: string) {
   var hash = 5381,
     i = str.length
 
@@ -112,7 +114,7 @@ function hash(str) {
   return String(hash >>> 0)
 }
 
-function required(key) {
+function required(key: string) {
   const error = new Error(`${key} is required`)
   error.status = 400
   throw error
@@ -123,4 +125,4 @@ async function reset() {
   persist()
 }
 
-export {authorize, create, read, update, remove, readMany, readByOwner, reset}
+export { authorize, create, read, update, remove, readMany, readByOwner, reset }

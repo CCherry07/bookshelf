@@ -1,9 +1,10 @@
+type UserForm = { username: string, password: string }
 const usersKey = '__bookshelf_users__'
 let users = {}
 const persist = () =>
   window.localStorage.setItem(usersKey, JSON.stringify(users))
 const load = () =>
-  Object.assign(users, JSON.parse(window.localStorage.getItem(usersKey)))
+  Object.assign(users, JSON.parse(window.localStorage.getItem(usersKey) ?? ""))
 
 // initialize
 try {
@@ -21,7 +22,7 @@ window.__bookshelf.purgeUsers = () => {
   persist()
 }
 
-function validateUserForm({username, password}) {
+function validateUserForm({ username, password }: UserForm) {
   if (!username) {
     const error = new Error('A username is required')
     error.status = 400
@@ -34,20 +35,20 @@ function validateUserForm({username, password}) {
   }
 }
 
-async function authenticate({username, password}) {
-  validateUserForm({username, password})
+async function authenticate({ username, password }: UserForm) {
+  validateUserForm({ username, password })
   const id = hash(username)
   const user = users[id] || {}
   if (user.passwordHash === hash(password)) {
-    return {...sanitizeUser(user), token: btoa(user.id)}
+    return { ...sanitizeUser(user), token: btoa(user.id) }
   }
   const error = new Error('Invalid username or password')
-  error.status = 400
+  error.!status = 400
   throw error
 }
 
-async function create({username, password}) {
-  validateUserForm({username, password})
+async function create({ username, password }) {
+  validateUserForm({ username, password })
   const id = hash(username)
   const passwordHash = hash(password)
   if (users[id]) {
@@ -57,7 +58,7 @@ async function create({username, password}) {
     error.status = 400
     throw error
   }
-  users[id] = {id, username, passwordHash}
+  users[id] = { id, username, passwordHash }
   persist()
   return read(id)
 }
@@ -68,7 +69,7 @@ async function read(id) {
 }
 
 function sanitizeUser(user) {
-  const {passwordHash, ...rest} = user
+  const { passwordHash, ...rest } = user
   return rest
 }
 
@@ -110,4 +111,4 @@ async function reset() {
   persist()
 }
 
-export {authenticate, create, read, update, remove, reset}
+export { authenticate, create, read, update, remove, reset }
